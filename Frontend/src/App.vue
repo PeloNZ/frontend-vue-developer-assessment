@@ -6,6 +6,7 @@ const items = ref([])
 
 onMounted(() => {
   // todo
+  // call get items and show in the list
 })
 
 const handleDescriptionChange = (event) => {
@@ -15,7 +16,9 @@ const handleDescriptionChange = (event) => {
 async function getItems() {
   try {
     alert('todo')
+    // get request to /api/todoItems
   } catch (error) {
+    // add error handler component, toaster? replace all console logs
     console.error(error)
   }
 }
@@ -23,6 +26,7 @@ async function getItems() {
 async function handleAdd() {
   try {
     alert('todo')
+    // todo post /api/todoItems with body {description: string, isCompleted: bool}
   } catch (error) {
     console.error(error)
   }
@@ -30,15 +34,28 @@ async function handleAdd() {
 
 function handleClear() {
   description.value = ''
+  // todo
 }
 
 async function handleMarkAsComplete(item) {
   try {
     alert('todo')
+    // todo PUT todoItems/:id
   } catch (error) {
     console.error(error)
   }
 }
+
+// http handlers
+// todo move to separate component once working
+// use fetch api to keep it simple
+
+// todo status handler
+
+// todo response handler 200 201 204 400 404 500
+
+// todo error display handler
+
 </script>
 
 <template>

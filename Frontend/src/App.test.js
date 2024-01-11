@@ -7,3 +7,9 @@ test('renders the footer text', () => {
   const footerElement = screen.getByText(/clearpoint.digital/i)
   expect(footerElement).toBeTruthy()
 })
+
+// todo test functionality
+// get items
+// add item
+// mark item completed
+// show errors
