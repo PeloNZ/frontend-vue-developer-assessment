@@ -25,7 +25,9 @@ const items = ref([])
 onMounted(() => {
   console.debug('mounted')
   // todo
-  // call get items and show in the list
+  // load existing items.
+  console.debug(items.value)
+  getItems()
 })
 
 const handleDescriptionChange = (event) => {
@@ -33,11 +35,42 @@ const handleDescriptionChange = (event) => {
 }
 
 async function getItems() {
+  console.debug('getItems');
   try {
 
     // alert('todo')
     // todo routing
     // get request to /api/todoItems
+    await fetch(apiUrl, {
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+      .then((response) => {
+        // todo validate response
+        return response.json();
+        // console.log(response.headers.get('Content-Type'));
+        // console.log(response.headers.get('Date'));
+
+        // console.log(response.status);
+        // console.log(response.statusText);
+        // console.log(response.type);
+        // console.log(response.url);
+
+        // response.json().then(function(data) {
+        //   console.debug(data);
+        // })
+      })
+      .then((response) => {
+        // empty the list first to avoid duplication of values. todo improve by matching on id.
+        items.value = [];
+:x
+        response.forEach(item => {
+          items.value.push(item)
+        })
+      })
+
+
   } catch (error) {
     // add error handler component, toaster? replace all console logs
     console.error(error)
