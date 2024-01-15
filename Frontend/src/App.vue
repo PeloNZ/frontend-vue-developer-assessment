@@ -1,12 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import * as http from './http.ts'
 
 // todo list
 // CRUD requests to backend
-// http layer
 // env vars
 // add item
-// display items
 // update item, mark as completed
 // display errors
 // add tests
@@ -14,10 +13,10 @@ import { ref, onMounted } from 'vue'
 // form security
 
 // done list
+// display items
+// http layer
+// add item
 
-// todo move to env config along with security key
-// api url
-const apiUrl = 'http://localhost:7000/api/todoItems'
 
 const description = ref('')
 const items = ref([])
@@ -37,40 +36,21 @@ const handleDescriptionChange = (event) => {
 async function getItems() {
   console.debug('getItems');
   try {
-
-    // alert('todo')
-    // todo routing
-    // get request to /api/todoItems
-    await fetch(apiUrl, {
-      headers: {
-        "Content-Type": "application/json"
-      },
-    })
+    await http.get('')
       .then((response) => {
         // todo validate response
-        return response.json();
-        // console.log(response.headers.get('Content-Type'));
-        // console.log(response.headers.get('Date'));
-
-        // console.log(response.status);
-        // console.log(response.statusText);
-        // console.log(response.type);
-        // console.log(response.url);
-
-        // response.json().then(function(data) {
-        //   console.debug(data);
-        // })
+        return response;
       })
       .then((response) => {
-        // empty the list first to avoid duplication of values. todo improve by matching on id.
+        // empty the list first to avoid duplication of values.
+        // todo improve by matching on id.
         items.value = [];
-:x
+
         response.forEach(item => {
           items.value.push(item)
         })
+        // todo ordering. id is random string at the moment but could change the backend to sequential ids or return a timestamp value in the object.
       })
-
-
   } catch (error) {
     // add error handler component, toaster? replace all console logs
     console.error(error)
