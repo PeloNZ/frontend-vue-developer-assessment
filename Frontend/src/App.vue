@@ -1,10 +1,29 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+// todo list
+// CRUD requests to backend
+// http layer
+// env vars
+// add item
+// display items
+// update item, mark as completed
+// display errors
+// add tests
+// authentication
+// form security
+
+// done list
+
+// todo move to env config along with security key
+// api url
+const apiUrl = 'http://localhost:7000/api/todoItems'
+
 const description = ref('')
 const items = ref([])
 
 onMounted(() => {
+  console.debug('mounted')
   // todo
   // call get items and show in the list
 })
@@ -15,7 +34,9 @@ const handleDescriptionChange = (event) => {
 
 async function getItems() {
   try {
-    alert('todo')
+
+    // alert('todo')
+    // todo routing
     // get request to /api/todoItems
   } catch (error) {
     // add error handler component, toaster? replace all console logs
@@ -39,7 +60,8 @@ function handleClear() {
 
 async function handleMarkAsComplete(item) {
   try {
-    alert('todo')
+    console.debug('handleMarkAsComplete');
+    // alert('todo')
     // todo PUT todoItems/:id
   } catch (error) {
     console.error(error)

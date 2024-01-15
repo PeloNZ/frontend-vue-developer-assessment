@@ -53,6 +53,7 @@ const remove = async (id: string): Promise<null | void> => {
 
 // GET todoItems
 todoItemRouter.get("/", async (req: Request, res: Response) => {
+  console.debug('get todoitems');
   try {
     const items: TodoItem[] = await findAll();
 
@@ -64,6 +65,7 @@ todoItemRouter.get("/", async (req: Request, res: Response) => {
 
 // GET todoItem/:id
 todoItemRouter.get("/:id", async (req: Request, res: Response) => {
+  console.debug('get id');
   try {
     const item: TodoItem = await find(req.params.id);
 
@@ -79,6 +81,7 @@ todoItemRouter.get("/:id", async (req: Request, res: Response) => {
 
 // POST todoItem
 todoItemRouter.post("/", async (req: Request, res: Response) => {
+  console.debug('post');
   try {
     const todoItem: BaseTodoItem = req.body;
     console.log({ todoItem, req, body: req.body });
@@ -104,6 +107,7 @@ todoItemRouter.post("/", async (req: Request, res: Response) => {
 
 // PUT todoItems/:id
 todoItemRouter.put("/:id", async (req: Request, res: Response) => {
+  console.debug('put');
   try {
     const id = req.params.id;
     const todoItem: BaseTodoItem = req.body;
@@ -122,6 +126,7 @@ todoItemRouter.put("/:id", async (req: Request, res: Response) => {
 
 // DELETE todoItems/:id
 todoItemRouter.delete("/:id", async (req: Request, res: Response) => {
+  console.debug('delete');
   try {
     const id = req.params.id;
 
