@@ -48,7 +48,8 @@ async function getItems() {
         response.forEach(item => {
           items.value.push(item)
         })
-        // todo ordering. id is random string at the moment but could change the backend to sequential ids or return a timestamp value in the object.
+
+        orderByStatus()
       })
   } catch (error) {
     // add error handler component, toaster? replace all console logs
@@ -56,6 +57,12 @@ async function getItems() {
   }
 }
 
+function orderByStatus() {
+  // id is random string so just push the completed values to the bottom.
+  items.value.sort( (itemA, itemB) =>
+    Number(itemA.isCompleted) - Number(itemB.isCompleted)
+  );
+}
 
 async function handleAdd() {
   console.debug('handleAdd');
@@ -103,6 +110,8 @@ async function handleMarkAsComplete(item) {
         item.isCompleted = response.isCompleted
         // todo error handling
       })
+
+    orderByStatus()
 
   } catch (error) {
     console.error(error)
