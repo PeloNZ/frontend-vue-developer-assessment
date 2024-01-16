@@ -5,7 +5,6 @@ import * as http from './http.ts'
 // todo list
 // CRUD requests to backend
 // env vars
-// update item, mark as completed
 // display errors
 // add tests
 // authentication
@@ -15,6 +14,7 @@ import * as http from './http.ts'
 // display items
 // http layer
 // add item
+// update item, mark as completed
 
 
 const description = ref('')
@@ -87,10 +87,23 @@ function handleClear() {
 }
 
 async function handleMarkAsComplete(item) {
+  console.debug('handleMarkAsComplete');
   try {
-    console.debug('handleMarkAsComplete');
-    // alert('todo')
-    // todo PUT todoItems/:id
+    const data = {
+      id: item.id,
+      description: item.description,
+      isCompleted: true,
+    }
+
+    http.put(data.id, data)
+      .then((response) => {
+        console.debug(response)
+
+        // Set the referenced item status only after a valid response is received.
+        item.isCompleted = response.isCompleted
+        // todo error handling
+      })
+
   } catch (error) {
     console.error(error)
   }
@@ -182,7 +195,7 @@ async function handleMarkAsComplete(item) {
                 <td>{{ item.id }}</td>
                 <td>{{ item.description }}</td>
                 <td>
-                  <button type="button" class="btn btn-warning btn-sm" @click="() => handleMarkAsComplete(item)">
+                  <button v-show="item.isCompleted === false" type="button" class="btn btn-warning btn-sm" @click="() => handleMarkAsComplete(item)">
                     Mark as completed
                   </button>
                 </td>
