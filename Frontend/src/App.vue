@@ -5,7 +5,6 @@ import * as http from './http.ts'
 // todo list
 // CRUD requests to backend
 // env vars
-// add item
 // update item, mark as completed
 // display errors
 // add tests
@@ -57,10 +56,26 @@ async function getItems() {
   }
 }
 
+
 async function handleAdd() {
+  console.debug('handleAdd');
+
   try {
-    alert('todo')
-    // todo post /api/todoItems with body {description: string, isCompleted: bool}
+    const data = {
+      description: description.value,
+      isCompleted: false
+    }
+
+    await http.post('', data)
+      .then((response) => {
+        // console.debug(response)
+        items.value.push(response)
+      })
+    // todo notify added ok
+    // todo handle error
+    // todo validate input
+
+
   } catch (error) {
     console.error(error)
   }
