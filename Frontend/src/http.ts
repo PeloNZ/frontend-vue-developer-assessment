@@ -6,40 +6,40 @@
 const apiUrl = 'http://localhost:7000/api/todoItems/'
 
 export async function get<T>(uri: string, config?: RequestInit): Promise<T> {
-	const init = {
+  const init = {
     method: 'GET',
     ...config
   }
 
-	return await dispatchRequest<T>(uri, init)
+  return await dispatchRequest<T>(uri, init)
 }
 
 export async function post<T, U>(
-	uri: string,
-	body: T,
-	config?: RequestInit
+  uri: string,
+  body: T,
+  config?: RequestInit
 ): Promise<U> {
-	const init = {
+  const init = {
     method: 'POST',
     body: JSON.stringify(body),
     ...config
   }
 
-	return await dispatchRequest<U>(uri, init)
+  return await dispatchRequest<U>(uri, init)
 }
 
 export async function put<T, U>(
-	uri: string,
-	body: T,
-	config?: RequestInit
+  uri: string,
+  body: T,
+  config?: RequestInit
 ): Promise<U> {
-	const init = {
+  const init = {
     method: 'PUT',
     body: JSON.stringify(body),
     ...config
   }
 
-	return await dispatchRequest<U>(uri, init)
+  return await dispatchRequest<U>(uri, init)
 }
 
 export async function destroy<T>(uri: string, config?: RequestInit): Promise<T> {
@@ -54,12 +54,31 @@ export async function destroy<T>(uri: string, config?: RequestInit): Promise<T> 
 async function dispatchRequest<T>(uri: string, config: RequestInit): Promise<T> {
   // always send body as json
   config.headers = {
-    "Content-Type": "application/json"
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
   }
 
-	const request = new Request(apiUrl + uri, config)
-	const response = await fetch(request)
-  // todo response error handling
+  try {
+    const request = new Request(apiUrl + uri, config)
+    const response = await fetch(request)
+    const json = await response.json()
 
-	return response.json()
+    return response.ok ? json : Promise.reject(json)
+  } catch (error) {
+    console.error('There has been a problem with your fetch operation:')
+  }
+  // const response = await fetch(request)
+  //   .then((response) => {
+  //     if (response.ok) {
+  //       return response
+  //     } else {
+  //       Promise.reject(response)
+  //     }
+  //
+  //   })
+  //   .catch((error) => {
+  //     console.error(error)
+  //   })
+  //
+  // return response.json()
 }

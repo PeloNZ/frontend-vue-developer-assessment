@@ -8,6 +8,13 @@ test('renders the footer text', () => {
   expect(footerElement).toBeTruthy()
 })
 
+test('get items when mounted', async () => {
+  render(App)
+
+  const listElement = screen.getByText('Showing 0 Item(s)')
+  expect(listElement).toBeTruthy();
+})
+
 // todo test functionality
 // get items
 // add item

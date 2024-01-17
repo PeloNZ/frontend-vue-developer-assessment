@@ -1,5 +1,5 @@
-<script setup>
-import { ref, onMounted } from 'vue'
+<script lang="ts" setup>
+import { computed, onMounted, ref } from 'vue'
 import * as http from './http.ts'
 
 // todo list
@@ -19,6 +19,15 @@ import * as http from './http.ts'
 
 const description = ref('')
 const items = ref([])
+const errorMessage = ref('')
+
+const hasDescription = computed(() =>
+  description.value.length > 0
+)
+
+const hasErrorMessage = computed(() =>
+  errorMessage.value.length > 0
+)
 
 onMounted(() => {
   console.debug('mounted')
@@ -27,10 +36,6 @@ onMounted(() => {
   console.debug(items.value)
   getItems()
 })
-
-const handleDescriptionChange = (event) => {
-  // todo
-}
 
 async function getItems() {
   console.debug('getItems');
@@ -77,6 +82,7 @@ async function handleAdd() {
       .then((response) => {
         // console.debug(response)
         items.value.push(response)
+        orderByStatus()
       })
     // todo notify added ok
     // todo handle error
@@ -85,12 +91,12 @@ async function handleAdd() {
 
   } catch (error) {
     console.error(error)
+    errorMessage.value = error.message
   }
 }
 
 function handleClear() {
   description.value = ''
-  // todo
 }
 
 async function handleMarkAsComplete(item) {
@@ -170,17 +176,27 @@ async function handleMarkAsComplete(item) {
                   class="form-control"
                   type="text"
                   placeholder="Enter description..."
-                  :value="description"
-                  @input="handleDescriptionChange"
+                  v-model="description"
                 />
               </div>
             </div>
             <div class="row mb-3 offset-md-2">
               <div class="hstack gap-2">
-                <button type="button" class="btn btn-primary" @click="handleAdd">Add Item</button>
-                <button type="button" class="btn btn-secondary" @click="handleClear">Clear</button>
+                <button type="button" class="btn btn-primary" @click="handleAdd" :disabled="hasDescription === false">
+                  Add Item
+                </button>
+                <button type="button" class="btn btn-secondary" @click="handleClear"
+                        :disabled="hasDescription === false">Clear
+                </button>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="container" id="error_container" v-show="hasErrorMessage">
+            <span>Error: {{ errorMessage }}</span>
           </div>
         </div>
       </div>
