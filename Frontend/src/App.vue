@@ -1,44 +1,133 @@
-<script setup>
-import { ref, onMounted } from 'vue'
+<script lang="ts" setup>
+import { computed, onMounted, ref } from 'vue'
+import * as http from './http'
+import TodoItemsList from '@/components/TodoItemsList.vue'
+
+// todo list
+// env vars
+// add tests
+// authentication
+// form security
+
+// done list
+// display errors
+// CRUD requests to backend
+// display items
+// http layer
+// add item
+// update item, mark as completed
+// added keyboard event handler for description input field - eg better accessibility
 
 const description = ref('')
 const items = ref([])
+const errorMessage = ref('')
+
+const hasDescription = computed(() =>
+  description.value.length > 0
+)
+
+const hasErrorMessage = computed(() =>
+  errorMessage.value.length > 0
+)
 
 onMounted(() => {
-  // todo
+  // load existing items.
+  getItems()
 })
-
-const handleDescriptionChange = (event) => {
-  // todo
-}
 
 async function getItems() {
   try {
-    alert('todo')
+    await http.get('')
+      .then((response) => {
+        // todo validate response
+        return response;
+      })
+      .then((response) => {
+        // empty the list first to avoid duplication of values.
+        // todo improve by matching on id.
+        items.value = [];
+
+        response.forEach(item => {
+          items.value.push(item)
+        })
+
+        orderByStatus()
+        clearError()
+      })
   } catch (error) {
-    console.error(error)
+    setError(error.errorMessage)
   }
 }
 
 async function handleAdd() {
   try {
-    alert('todo')
-  } catch (error) {
-    console.error(error)
-  }
-}
+    const data = {
+      description: description.value,
+      isCompleted: false
+    }
 
-function handleClear() {
-  description.value = ''
+    await http.post('', data)
+      .then((response) => {
+        // todo validate input
+        items.value.push(response)
+
+        orderByStatus()
+        clearError()
+      })
+  } catch (error) {
+    setError(error.errorMessage)
+  }
 }
 
 async function handleMarkAsComplete(item) {
   try {
-    alert('todo')
+    const data = {
+      id: item.id,
+      description: item.description,
+      isCompleted: true,
+    }
+
+    http.put(data.id, data)
+      .then((response) => {
+        // Set the referenced item status only after a valid response is received.
+        item.isCompleted = response.isCompleted
+
+        orderByStatus()
+        clearError()
+      })
+
   } catch (error) {
-    console.error(error)
+    setError(error.errorMessage)
   }
 }
+
+/**
+ * utility functions
+ */
+
+function setError(message: string) {
+  errorMessage.value = message
+}
+
+function clearError() {
+  errorMessage.value = ''
+}
+
+function handleClear() {
+  description.value = ''
+  clearError()
+}
+
+/**
+ * id is a random string so just push the completed items to the bottom.
+ * todo add a timestamp property to the todoItem model.
+ */
+function orderByStatus() {
+  items.value.sort((itemA, itemB) =>
+    Number(itemA.isCompleted) - Number(itemB.isCompleted)
+  )
+}
+
 </script>
 
 <template>
@@ -46,7 +135,7 @@ async function handleMarkAsComplete(item) {
     <div class="container">
       <div class="row">
         <div class="col">
-          <img src="clearPointLogo.png" class="img-fluid rounded" />
+          <img src="clearPointLogo.png" class="img-fluid rounded" alt="clearpoint logo" />
         </div>
       </div>
       <div class="row">
@@ -80,18 +169,32 @@ async function handleMarkAsComplete(item) {
                 <input
                   class="form-control"
                   type="text"
+                  aria-label="descriptionInput"
                   placeholder="Enter description..."
-                  :value="description"
-                  @input="handleDescriptionChange"
+                  @keyup.enter="handleAdd"
+                  v-model="description"
                 />
               </div>
             </div>
             <div class="row mb-3 offset-md-2">
               <div class="hstack gap-2">
-                <button type="button" class="btn btn-primary" @click="handleAdd">Add Item</button>
-                <button type="button" class="btn btn-secondary" @click="handleClear">Clear</button>
+                <button type="button" class="btn btn-primary" @click="handleAdd" :disabled="hasDescription === false"
+                        aria-label="addItem">
+                  Add Item
+                </button>
+                <button type="button" class="btn btn-secondary" @click="handleClear"
+                        aria-label="clearForm"
+                        :disabled="hasDescription === false">Clear
+                </button>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="container" id="error_container" v-show="hasErrorMessage">
+            <div class="alert alert-danger">{{ errorMessage }}</div>
           </div>
         </div>
       </div>
@@ -102,26 +205,7 @@ async function handleMarkAsComplete(item) {
             Showing {{ items.length }} Item(s)
             <button type="button" class="pull-right btn btn-primary" @click="getItems">Refresh</button>
           </h1>
-          <table class="table table-striped table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Description</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in items" :key="item.id">
-                <td>{{ item.id }}</td>
-                <td>{{ item.description }}</td>
-                <td>
-                  <button type="button" class="btn btn-warning btn-sm" @click="() => handleMarkAsComplete(item)">
-                    Mark as completed
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <TodoItemsList :items="items" @markAsComplete="handleMarkAsComplete" />
         </div>
       </div>
     </div>

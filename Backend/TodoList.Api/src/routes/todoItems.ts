@@ -1,6 +1,9 @@
-import express, { Request, Response } from "express";
-import ShortUniqueId from "short-unique-id";
-import { BaseTodoItem, TodoItem, TodoItems } from "../models/todoItems";
+import express, { Request, Response } from 'express'
+import ShortUniqueId from 'short-unique-id'
+import { BaseTodoItem, TodoItem, TodoItems } from '../models/todoItems'
+
+// I've made one backend change, to return errors as json instead of plain text.
+// Now the front end only needs to consider a single Accept type.
 
 export const todoItemRouter = express.Router();
 
@@ -52,18 +55,20 @@ const remove = async (id: string): Promise<null | void> => {
 };
 
 // GET todoItems
-todoItemRouter.get("/", async (req: Request, res: Response) => {
+todoItemRouter.get('/', async (_req: Request, res: Response) => {
+  console.debug('get todoitems');
   try {
     const items: TodoItem[] = await findAll();
 
     return res.status(200).send(items);
   } catch (e) {
-    return res.status(500).send(e.message);
+    return res.status(500).json(e)
   }
 });
 
 // GET todoItem/:id
 todoItemRouter.get("/:id", async (req: Request, res: Response) => {
+  console.debug('get id');
   try {
     const item: TodoItem = await find(req.params.id);
 
@@ -71,21 +76,22 @@ todoItemRouter.get("/:id", async (req: Request, res: Response) => {
       return res.status(200).send(item);
     }
 
-    return res.status(404).send("TodoItem not found");
+    return res.status(404).json({ errorMessage: 'TodoItem not found' })
   } catch (e) {
-    return res.status(500).send(e.message);
+    return res.status(500).json(e)
   }
 });
 
 // POST todoItem
 todoItemRouter.post("/", async (req: Request, res: Response) => {
+  console.debug('post');
   try {
     const todoItem: BaseTodoItem = req.body;
     console.log({ todoItem, req, body: req.body });
 
     const description = todoItem?.description;
     if (!description) {
-      return res.status(400).send("Description is required");
+      return res.status(400).json({ errorMessage: 'Description is required' })
     }
 
     const hasDuplicateDescription = await todoItemDescriptionExists(
@@ -93,17 +99,18 @@ todoItemRouter.post("/", async (req: Request, res: Response) => {
     );
 
     if (hasDuplicateDescription) {
-      return res.status(400).send("Description already exists");
+      return res.status(400).json({ errorMessage: 'Description already exists' })
     }
     const newtodoItem = await create(todoItem);
     return res.status(201).json(newtodoItem);
   } catch (e) {
-    return res.status(500).send(e.message);
+    return res.status(500).json(e)
   }
 });
 
 // PUT todoItems/:id
 todoItemRouter.put("/:id", async (req: Request, res: Response) => {
+  console.debug('put');
   try {
     const id = req.params.id;
     const todoItem: BaseTodoItem = req.body;
@@ -114,14 +121,15 @@ todoItemRouter.put("/:id", async (req: Request, res: Response) => {
       return res.status(200).json(updatedItem);
     }
 
-    return res.status(404).send("TodoItem not found");
+    return res.status(404).json({ errorMessage: 'TodoItem not found' })
   } catch (e) {
-    return res.status(500).send(e.message);
+    return res.status(500).json(e)
   }
 });
 
 // DELETE todoItems/:id
 todoItemRouter.delete("/:id", async (req: Request, res: Response) => {
+  console.debug('delete');
   try {
     const id = req.params.id;
 
@@ -129,6 +137,6 @@ todoItemRouter.delete("/:id", async (req: Request, res: Response) => {
 
     return res.sendStatus(204);
   } catch (e) {
-    return res.status(500).send(e.message);
+    return res.status(500).json(e)
   }
 });

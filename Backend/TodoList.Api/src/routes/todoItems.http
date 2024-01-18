@@ -1,0 +1,45 @@
+
+### get items
+GET {{uri}}
+
+### get item
+GET {{uri}}/Zm4pxS6VPe
+
+### post item
+POST {{uri}}
+Content-Type: application/json
+
+{
+"description": "test",
+  "isCompleted": false
+}
+
+### put update item
+PUT {{uri}}/Zm4pxS6VPe
+Content-Type: application/json
+
+{
+  "description": "test update",
+  "isCompleted": true
+}
+
+### delete item
+DELETE {{uri}}/Zm4pxS6VPe
+
+### curl post
+curl 'http://localhost:7000/api/todoItems/' \
+  -H 'Accept: */*' \
+  -H 'Accept-Language: en-NZ,en-GB;q=0.9,en-US;q=0.8,en;q=0.7' \
+  -H 'Connection: keep-alive' \
+  -H 'Content-Type: text/plain;charset=UTF-8' \
+  -H 'Origin: http://localhost:5173' \
+  -H 'Referer: http://localhost:5173/' \
+  -H 'Sec-Fetch-Dest: empty' \
+  -H 'Sec-Fetch-Mode: cors' \
+  -H 'Sec-Fetch-Site: same-site' \
+  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' \
+  -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  --data-raw '{"description":"t","isCompleted":false}' \
+  --compressed
