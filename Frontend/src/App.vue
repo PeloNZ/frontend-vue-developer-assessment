@@ -1,21 +1,22 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
-import * as http from './http.ts'
+import * as http from './http'
+import TodoItemsList from '@/components/TodoItemsList.vue'
 
 // todo list
-// CRUD requests to backend
 // env vars
-// display errors
 // add tests
 // authentication
 // form security
 
 // done list
+// display errors
+// CRUD requests to backend
 // display items
 // http layer
 // add item
 // update item, mark as completed
-
+// added keyboard event handler for description input field - eg better accessibility
 
 const description = ref('')
 const items = ref([])
@@ -30,15 +31,11 @@ const hasErrorMessage = computed(() =>
 )
 
 onMounted(() => {
-  console.debug('mounted')
-  // todo
   // load existing items.
-  console.debug(items.value)
   getItems()
 })
 
 async function getItems() {
-  console.debug('getItems');
   try {
     await http.get('')
       .then((response) => {
@@ -55,23 +52,14 @@ async function getItems() {
         })
 
         orderByStatus()
+        clearError()
       })
   } catch (error) {
-    // add error handler component, toaster? replace all console logs
-    console.error(error)
+    setError(error.errorMessage)
   }
 }
 
-function orderByStatus() {
-  // id is random string so just push the completed values to the bottom.
-  items.value.sort( (itemA, itemB) =>
-    Number(itemA.isCompleted) - Number(itemB.isCompleted)
-  );
-}
-
 async function handleAdd() {
-  console.debug('handleAdd');
-
   try {
     const data = {
       description: description.value,
@@ -80,27 +68,18 @@ async function handleAdd() {
 
     await http.post('', data)
       .then((response) => {
-        // console.debug(response)
+        // todo validate input
         items.value.push(response)
+
         orderByStatus()
+        clearError()
       })
-    // todo notify added ok
-    // todo handle error
-    // todo validate input
-
-
   } catch (error) {
-    console.error(error)
-    errorMessage.value = error.message
+    setError(error.errorMessage)
   }
 }
 
-function handleClear() {
-  description.value = ''
-}
-
 async function handleMarkAsComplete(item) {
-  console.debug('handleMarkAsComplete');
   try {
     const data = {
       id: item.id,
@@ -110,29 +89,44 @@ async function handleMarkAsComplete(item) {
 
     http.put(data.id, data)
       .then((response) => {
-        console.debug(response)
-
         // Set the referenced item status only after a valid response is received.
         item.isCompleted = response.isCompleted
-        // todo error handling
+
+        orderByStatus()
+        clearError()
       })
 
-    orderByStatus()
-
   } catch (error) {
-    console.error(error)
+    setError(error.errorMessage)
   }
 }
 
-// http handlers
-// todo move to separate component once working
-// use fetch api to keep it simple
+/**
+ * utility functions
+ */
 
-// todo status handler
+function setError(message: string) {
+  errorMessage.value = message
+}
 
-// todo response handler 200 201 204 400 404 500
+function clearError() {
+  errorMessage.value = ''
+}
 
-// todo error display handler
+function handleClear() {
+  description.value = ''
+  clearError()
+}
+
+/**
+ * id is a random string so just push the completed items to the bottom.
+ * todo add a timestamp property to the todoItem model.
+ */
+function orderByStatus() {
+  items.value.sort((itemA, itemB) =>
+    Number(itemA.isCompleted) - Number(itemB.isCompleted)
+  )
+}
 
 </script>
 
@@ -141,7 +135,7 @@ async function handleMarkAsComplete(item) {
     <div class="container">
       <div class="row">
         <div class="col">
-          <img src="clearPointLogo.png" class="img-fluid rounded" />
+          <img src="clearPointLogo.png" class="img-fluid rounded" alt="clearpoint logo" />
         </div>
       </div>
       <div class="row">
@@ -176,6 +170,7 @@ async function handleMarkAsComplete(item) {
                   class="form-control"
                   type="text"
                   placeholder="Enter description..."
+                  @keyup.enter="handleAdd"
                   v-model="description"
                 />
               </div>
@@ -196,7 +191,7 @@ async function handleMarkAsComplete(item) {
       <div class="row">
         <div class="col">
           <div class="container" id="error_container" v-show="hasErrorMessage">
-            <span>Error: {{ errorMessage }}</span>
+            <div class="alert alert-danger">{{ errorMessage }}</div>
           </div>
         </div>
       </div>

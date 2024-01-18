@@ -1,6 +1,7 @@
 // http wrapper
 // using a wrapper we can easily swap out the request library, eg axios
 // I'd typically use axios but decided to use fetch for a change.
+// This is also a good opportunity to use TypeScript which I haven't used a lot.
 
 // todo move to env config along with security key
 const apiUrl = 'http://localhost:7000/api/todoItems/'
@@ -58,27 +59,9 @@ async function dispatchRequest<T>(uri: string, config: RequestInit): Promise<T> 
     'Accept': 'application/json'
   }
 
-  try {
-    const request = new Request(apiUrl + uri, config)
-    const response = await fetch(request)
-    const json = await response.json()
+  const request = new Request(apiUrl + uri, config)
+  const response = await fetch(request)
+  const json = await response.json()
 
-    return response.ok ? json : Promise.reject(json)
-  } catch (error) {
-    console.error('There has been a problem with your fetch operation:')
-  }
-  // const response = await fetch(request)
-  //   .then((response) => {
-  //     if (response.ok) {
-  //       return response
-  //     } else {
-  //       Promise.reject(response)
-  //     }
-  //
-  //   })
-  //   .catch((error) => {
-  //     console.error(error)
-  //   })
-  //
-  // return response.json()
+  return response.ok ? json : Promise.reject(json)
 }
