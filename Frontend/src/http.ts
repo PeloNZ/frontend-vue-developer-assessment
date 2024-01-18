@@ -2,6 +2,7 @@
 // using a wrapper we can easily swap out the request library, eg axios
 // I'd typically use axios but decided to use fetch for a change.
 // This is also a good opportunity to use TypeScript which I haven't used a lot.
+// Also in a real env this would handle authentication eg Bearer Token
 
 // todo move to env config along with security key
 const apiUrl = 'http://localhost:7000/api/todoItems/'

@@ -169,6 +169,7 @@ function orderByStatus() {
                 <input
                   class="form-control"
                   type="text"
+                  aria-label="descriptionInput"
                   placeholder="Enter description..."
                   @keyup.enter="handleAdd"
                   v-model="description"
@@ -177,10 +178,12 @@ function orderByStatus() {
             </div>
             <div class="row mb-3 offset-md-2">
               <div class="hstack gap-2">
-                <button type="button" class="btn btn-primary" @click="handleAdd" :disabled="hasDescription === false">
+                <button type="button" class="btn btn-primary" @click="handleAdd" :disabled="hasDescription === false"
+                        aria-label="addItem">
                   Add Item
                 </button>
                 <button type="button" class="btn btn-secondary" @click="handleClear"
+                        aria-label="clearForm"
                         :disabled="hasDescription === false">Clear
                 </button>
               </div>
